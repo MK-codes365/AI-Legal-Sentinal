@@ -8,11 +8,11 @@ logger = configure_logging()
 from document_intelligence.uploader import validate_file
 from document_intelligence.parser import extract_text
 from document_intelligence.normalizer import normalize_text
-from document_intelligence.language import detect_language
+from document_intelligence.language import identify_language
 from document_intelligence.tokenizer import tokenize_document
 
-from extraction.clause_splitter import split_into_clauses
-from extraction.key_info import extract_key_info
+from extraction.clause_splitter import divide_into_clauses
+from extraction.key_info import extract_key_details
 
 from core.country_adapter import CountryAdapter
 from legal_engine.deviation_checker import check_deviations
@@ -72,14 +72,14 @@ async def analyze_document(
         protected_text, local_token_map = tokenize_document(normalized_content)
         token_session_map = local_token_map
 
-        doc_language = detect_language(protected_text)
-        segmented_clauses = split_into_clauses(protected_text)
+        doc_language = identify_language(protected_text)
+        segmented_clauses = divide_into_clauses(protected_text)
         active_clauses = segmented_clauses
 
-        document_summary = extract_key_info(protected_text)
+        document_summary = extract_key_details(protected_text)
 
-        legal_adapter = CountryAdapter(country=jurisdiction)
-        raw_flags = legal_adapter.analyze(segmented_clauses)
+        legal_adapter = CountryAdapter(target_country=jurisdiction)
+        raw_flags = legal_adapter.perform_checks(segmented_clauses)
         
         curated_flags, jurisdiction_notes = check_jurisdiction_compliance(raw_flags)
 
