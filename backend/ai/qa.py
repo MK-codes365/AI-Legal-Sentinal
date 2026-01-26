@@ -1,7 +1,12 @@
+import os
 from openai import OpenAI
 from typing import List, Dict
 
-client = OpenAI()
+def get_ai_client():
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        return None
+    return OpenAI(api_key=api_key)
 
 def find_relevant_clauses(clauses: List[Dict], query_text: str) -> List[Dict]:
     normalized_query = query_text.lower()
@@ -29,7 +34,12 @@ def answer_from_contract(clauses: List[Dict], question: str) -> str:
         ]
     )
 
-    result = client.chat.completions.create(
+    ai_client = get_ai_client()
+
+    if not ai_client:
+        return "Legal QA is currently unavailable (API key not configured)."
+
+    result = ai_client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
             {
