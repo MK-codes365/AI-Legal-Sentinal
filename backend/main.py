@@ -76,12 +76,7 @@ async def analyze_document(
         document_summary = extract_key_details(protected_text)
 
         legal_adapter = CountryAdapter(target_country=jurisdiction)
-        raw_flags = legal_adapter.perform_checks(segmented_clauses)
-        
-        print(f"DEBUG: Found {len(raw_flags)} raw flags")
-        
         curated_flags, jurisdiction_notes = check_jurisdiction_compliance(raw_flags)
-        print(f"DEBUG: Found {len(curated_flags)} curated flags after compliance check")
 
         computed_risk = 0
         for item in curated_flags:
@@ -95,12 +90,11 @@ async def analyze_document(
         final_score = min(100, computed_risk)
 
         final_flags = []
-        ai_limit = 5 # Increased for local analysis
+        ai_limit = 5
         ai_usage_count = 0
 
         for flag in curated_flags:
             if flag["risk_level"] == "High" and ai_usage_count < ai_limit:
-                # Use local explainer for high-risk flags
                 flag["explanation"] = explain_flag(flag)
                 ai_usage_count += 1
             else:
