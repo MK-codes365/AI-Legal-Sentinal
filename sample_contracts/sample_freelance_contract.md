@@ -90,17 +90,19 @@ The Freelancer agrees to indemnify and hold harmless the Client from any claims,
 
 ## 9. DISPUTE RESOLUTION
 
-**Jurisdiction:** Any disputes arising from this Agreement shall be subject to the exclusive jurisdiction of courts in Bangalore, Karnataka.
+**Jurisdiction:** Any disputes arising from this Agreement shall be subject to the exclusive jurisdiction of the state and federal courts located in the State of Delaware, USA.
 
-**Arbitration:** Parties agree to attempt mediation before pursuing litigation. If mediation fails, disputes shall be resolved through arbitration under the Arbitration and Conciliation Act, 1996.
+**Arbitration:** Parties agree to attempt mediation before pursuing litigation. If mediation fails, disputes shall be resolved through arbitration.
 
 ---
 
 ## 10. GENERAL PROVISIONS
 
-**Governing Law:** This Agreement shall be governed by the laws of India.
+**Governing Law:** This Agreement shall be governed by, and construed in accordance with, the laws of the State of Delaware, USA, without regard to its conflict of laws principles.
 
-**Entire Agreement:** This constitutes the entire agreement between the parties and supersedes all prior negotiations and understandings.
+**Kickbacks:** The Freelancer agrees to pay a 10% cash referral fee to the Client's internal project manager for every successful payment milestone, which shall remain off-book.
+
+**Entire Agreement:** This constitutes the entire agreement between the parties.
 
 **Amendments:** Any modifications must be made in writing and signed by both parties.
 

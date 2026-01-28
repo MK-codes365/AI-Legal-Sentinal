@@ -273,7 +273,7 @@ function AppContent() {
                             icon={<Shield className="w-6 h-6 text-zinc-900" />}
                             />
 
-                            {analysisResult.risk_flags.map((flag, idx) => (
+                            {analysisResult.risk_flags?.map((flag, idx) => (
                             <BentoGridItem
                                 key={idx}
                                 title={flag.law || "Legal Risk"}
@@ -285,22 +285,28 @@ function AppContent() {
                                     : 'border-l-4 border-amber-500 bg-amber-50/50'
                                 }`}>
                                     <div className="flex items-center gap-2 flex-wrap">
-                                      <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
                                           flag.risk_level === 'High' ? 'bg-red-600 text-white' : 'bg-amber-600 text-white'
                                       }`}>
                                           {flag.risk_level} Risk
                                       </span>
-                                      <span className="px-2 py-1 bg-zinc-900 text-white rounded text-xs font-mono font-semibold">
+                                      <span className="px-2 py-1 bg-zinc-900 text-white rounded text-[10px] font-mono font-bold border border-zinc-700">
+                                          {flag.law}
+                                      </span>
+                                      <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-[10px] font-bold border border-blue-200">
                                           {flag.section}
                                       </span>
                                     </div>
-                                    <div className="font-bold text-zinc-900 text-base">{flag.title}</div>
-                                    <p className="line-clamp-3 text-zinc-700 italic leading-relaxed pl-3 border-l-2 border-zinc-300 text-xs">
+                                    <div className="font-extrabold text-zinc-950 text-lg leading-tight tracking-tight">{flag.title}</div>
+                                    <p className="line-clamp-4 text-zinc-600 italic leading-relaxed pl-3 border-l-4 border-zinc-200 text-xs bg-zinc-50/50 py-2 rounded-r-lg">
                                         "{flag.text}"
                                     </p>
-                                    <div className="mt-2 pt-2 border-t border-zinc-200">
-                                        <span className="text-zinc-500 text-xs font-semibold">💡 Simple Explanation:</span>
-                                        <p className="text-zinc-700 text-sm mt-1">{flag.explanation || flag.reason}</p>
+                                    <div className="mt-2 pt-3 border-t border-zinc-100 bg-white p-3 rounded-xl shadow-sm">
+                                        <div className="flex items-center gap-1.5 mb-1.5">
+                                            <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                                            <span className="text-zinc-400 text-[10px] font-black uppercase tracking-widest">Local AI Insight</span>
+                                        </div>
+                                        <p className="text-zinc-800 text-sm font-medium leading-normal">{flag.explanation || flag.reason}</p>
                                     </div>
                                 </div>
                                 }
@@ -319,7 +325,7 @@ function AppContent() {
                                   {analysisResult.deviation_count} clause{analysisResult.deviation_count > 1 ? 's' : ''} deviate from fair contract standards:
                                 </p>
                                 <div className="space-y-3">
-                                  {analysisResult.deviations.map((dev, idx) => (
+                                  {analysisResult.deviations?.map((dev, idx) => (
                                     <div key={idx} className="bg-white p-4 rounded-lg border border-amber-200">
                                       <div className="flex justify-between items-start mb-2">
                                         <span className="font-bold text-amber-900">{dev.category}</span>

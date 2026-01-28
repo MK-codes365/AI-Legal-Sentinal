@@ -30,50 +30,58 @@ Vidhi Setu is an intelligent LegalTech platform designed specifically for the In
 ## 🛠️ Technology Stack
 
 - **Frontend**: React (Vite), Tailwind CSS, Framer Motion (for high-end animations), Lucide React.
-- **Backend**: FastAPI (Python), Regular Expression Legal Engines, OpenAI (for explainability layer).
+- **Backend**: FastAPI (Python), Local RAG Engine (Sentence Transformers), **Ollama (Qwen 2.5 7B)** for local inference.
 - **Design**: Premium dark/glassmorphism aesthetic with a citation-first user experience.
 
 ---
 
 ## 🏁 Getting Started
 
-### Backend Setup
+### 1. 🧠 AI Engine Setup (Ollama)
 
-1. Navigate to the `backend/` directory.
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Set your environment variables:
-   - `OPENAI_API_KEY`: For the QA and explanation layers.
-   - `HF_API_KEY`: (Optional) Fallback explanation model.
-4. Run the server:
-   ```bash
-   uvicorn main:app --reload
-   ```
+This project runs 100% locally. You MUST have Ollama installed and the model imported:
 
-### Frontend Setup
+1.  **Install Ollama** from [ollama.com](https://ollama.com).
+2.  **Pull Qwen 2.5**:
+    ```bash
+    ollama run qwen2.5:7b
+    ```
+3.  **Import as Vidhi Brain**: Follow the instructions in `backend/ai/README.md` (or simply ensure a model named `vidhi-brain` is available in your local Ollama instance).
 
-1. Navigate to the `frontend/` directory.
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Run the development server:
-   ```bash
-   npm run dev
-   ```
+### 2. 🔌 Backend Setup
+
+1.  Navigate to the `backend/` directory.
+2.  Install dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+3.  Run the server:
+    ```bash
+    uvicorn main:app --reload
+    ```
+
+### 3. 🎨 Frontend Setup
+
+1.  Navigate to the `frontend/` directory.
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
+3.  Run the development server:
+    ```bash
+    npm run dev
+    ```
 
 ---
 
 ## 🧪 Testing the Platform (Jury Guide)
 
-To evaluate the full depth of Vidhi Setu's legal intelligence:
+To evaluate the full depth of Vidhi Setu's local legal intelligence:
 
-1. Access the **Dashboard** via the "Get Started" button.
-2. Click **"Test with Sample"** to load a pre-configured high-risk contract.
-3. Observe the **Section 27 (Non-Compete)** detection and the **Jurisdiction Guardrail** blocking Delaware law references.
-4. Notice the **PII protection badge** indicating names and emails have been tokenized.
+1.  Access the **Dashboard** via the "Get Started" button.
+2.  Upload a contract (e.g., from `sample_contracts/`) or click **"Test with Sample"**.
+3.  Observe the **Section 27 (Non-Compete)** detection and the **Jurisdiction Guardrail** blocking non-Indian law.
+4.  Notice the **Local AI Insight** cards providing plain-English legal explanations grounded in Indian Statute.
 
 ---
 
@@ -83,4 +91,4 @@ Vidhi Setu is an assistive tool intended to improve legal awareness and understa
 
 ---
 
-**Vidhi Setu** - _Clarity over contracts, grounded in Indian Law._
+**Vidhi Setu: Zero Data, Absolute Clarity.** 🚀⚖️
