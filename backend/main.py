@@ -20,7 +20,7 @@ from core.country_adapter import CountryAdapter
 from legal_engine.deviation_checker import check_deviations
 from legal_engine.jurisdiction_guardrail import check_jurisdiction_compliance
 
-from ai.explainer import explain_flag, explain_raw_text, highlight_risky_words
+from ai.explainer import explain_flag, explain_raw_text, highlight_risky_words, generate_holistic_breakdown
 from ai.qa import answer_from_contract
 from legal_engine.india.contract_act import run_analysis
 from legal_engine.structure_check import analyze_structure
@@ -135,11 +135,15 @@ async def analyze_document(
         # 1. Structural Completeness Check
         structure_results = analyze_structure(normalized_content)
         
+        # 2. Holistic Narrative Breakdown
+        holistic_narrative = generate_holistic_breakdown(document_summary, final_flags, structure_results)
+        
         return {
             "country": jurisdiction,
             "language": doc_language,
             "risk_score": final_score,
             "summary": document_summary,
+            "holistic_narrative": holistic_narrative,
             "total_flags": len(final_flags),
             "risk_flags": final_flags,
             "deviations": detected_deviations,
@@ -164,12 +168,7 @@ class ChatRequest(BaseModel):
 
 @app.post("/ask-contract")
 def search_contract(request: ChatRequest):
-    if not active_clauses:
-        raise HTTPException(
-            status_code=400,
-            detail="No contract has been uploaded for analysis yet."
-        )
-
+    # We no longer block if active_clauses is empty to allow for "Universal Assistant" mode
     response_text = answer_from_contract(active_clauses, request.query)
     return {"answer": response_text}
 

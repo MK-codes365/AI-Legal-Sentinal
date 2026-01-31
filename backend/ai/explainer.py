@@ -154,3 +154,42 @@ def explain_raw_text(text: str, reason: str = None) -> str:
         return _clean_ai_output(explanation)
     except Exception as e:
         return f"Error explaining text: {str(e)}"
+def generate_holistic_breakdown(metadata: dict, flags: list, structure: dict) -> str:
+    """Generates a comprehensive narrative summary of the entire contract."""
+    ai = get_local_ai()
+    
+    # Prepare a condensed summary of the situation
+    risk_summary = []
+    for f in flags:
+        risk_summary.append(f"{f.get('title')} ({f.get('risk_level')} risk): {f.get('reason')}")
+    
+    missing_clauses = [c.get('title') if isinstance(c, dict) else c for c in structure.get("missing_clauses", [])]
+    
+    prompt = f"""
+    You are Vidhi, a powerful Indian Legal Assistant. 
+    Analyze the following contract analysis data and provide a "Holistic Legal Narrative".
+    
+    ### CONTRACT PROFILE:
+    Type: {metadata.get('contract_type')}
+    Parties: {', '.join(metadata.get('parties', [])) if isinstance(metadata.get('parties'), list) else metadata.get('parties')}
+    Law: {metadata.get('governing_law')}
+    
+    ### RISKS DETECTED:
+    {chr(10).join(risk_summary) if risk_summary else "No major risks identified."}
+    
+    ### MISSING COMPONENTS:
+    {', '.join(missing_clauses) if missing_clauses else "Document is structurally complete."}
+    
+    ### YOUR TASK:
+    Provide a professional but friendly 3-4 sentence "Big Picture" narrative of what this contract means for the user. 
+    Tell them if it's safe, what the biggest 'catch' is, and what they should do next.
+    Use NO legal jargon. Start with a direct summary like "This is a [Type] between..."
+    
+    Narrative Breakdown:
+    """
+    
+    try:
+        narrative = ai.generate(prompt, max_tokens=350)
+        return _clean_ai_output(narrative)
+    except Exception as e:
+        return f"Could not generate holistic narrative: {str(e)}"
