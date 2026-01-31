@@ -32,3 +32,9 @@ yarn-error.log*
 # Local environments/models
 .venv_stable/
 backend/ai/models/
+backend/db/
+frontend.zip
+sample_contract_for_testing.txt
+test_contracts/
+*.pdf
+*.docx

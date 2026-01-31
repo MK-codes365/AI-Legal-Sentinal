@@ -16,5 +16,11 @@ def process_docx_content(raw_bytes: bytes) -> str:
 def extract_text(raw_bytes: bytes, mime_type: str) -> str:
     if mime_type == "application/pdf":
         return process_pdf_content(raw_bytes)
-    else:
+    elif mime_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
         return process_docx_content(raw_bytes)
+    else:
+        # Fallback to plain text for .txt, .md, etc.
+        try:
+            return raw_bytes.decode('utf-8')
+        except UnicodeDecodeError:
+            return raw_bytes.decode('latin-1')

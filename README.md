@@ -6,32 +6,35 @@ Vidhi Setu is an intelligent LegalTech platform designed specifically for the In
 
 ---
 
-## 🚀 Key Features
+## 💡 Why Vidhi Setu?
 
-### ⚖️ Jurisdiction-Aware Legal Engine
+Traditional legal tech targets big corporations. **Vidhi Setu** is built for the **15 Million+ Indian Freelancers** who sign contracts every day without a lawyer.
 
-- **Statutory Grounding**: Every risk flag is mapped to specific Indian statutes like the Indian Contract Act, 1872 or the Copyright Act, 1957.
-- **Jurisdiction Lock**: Hard guardrails that block non-Indian legal concepts (e.g., Delaware law, at-will employment) to ensure 100% domestic compliance.
-
-### 🛡️ Privacy & Security (Zero-Logging)
-
-- **PII Tokenization**: Automatically detects and replaces names, emails, and company names with privacy tokens (e.g., `[PERSON_1]`, `[COMPANY_A]`) before analysis.
-- **Ephemeral Processing**: Contracts are processed in-memory and never stored permanently on our servers.
-- **User-Controlled Purge**: Users can permanently delete their session data from server memory with a single click.
-
-### 🧠 Intelligent Analysis
-
-- **Statutory Risk Scoring**: A deterministic 0-100 score based on legal severity.
-- **ELI5 Explanations**: Complex clauses are translated into simple, plain English summaries.
-- **Template Deviation Check**: Compares contract clauses against a baseline of "fair" industry standards to detect unfair terms.
+- **⚖️ Built for India**: No US "At-Will" citations. Strictly Indian Statutes.
+- **🔒 Absolute Privacy**: Your contract never leaves your RAM. Local AI processing means zero data leaks.
+- **👶 ELI5 Mode**: Legal jargon is scary. Our AI translates it into plain English a 5-year-old can understand.
 
 ---
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: React (Vite), Tailwind CSS, Framer Motion (for high-end animations), Lucide React.
-- **Backend**: FastAPI (Python), Local RAG Engine (Sentence Transformers), **Ollama (Qwen 2.5 7B)** for local inference.
-- **Design**: Premium dark/glassmorphism aesthetic with a citation-first user experience.
+```mermaid
+graph LR
+    subgraph Frontend
+    A[React/Vite] --> B[Tailwind/Framer]
+    end
+    subgraph Backend
+    C[FastAPI] --> D[Local RAG]
+    D --> E[Ollama / Qwen 2.5]
+    end
+    subgraph Privacy
+    F[PII Tokenizer] --> G[In-Memory ONLY]
+    end
+```
+
+- **Frontend**: React (Vite), Tailwind CSS, Framer Motion, Lucide.
+- **Backend**: FastAPI (Python), Local RAG Engine.
+- **AI**: **Ollama (Qwen 2.5 7B)** for local, private inference.
 
 ---
 

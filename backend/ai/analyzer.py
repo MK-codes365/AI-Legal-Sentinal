@@ -26,39 +26,21 @@ def analyze_clause_locally(clause_text: str) -> dict:
     - law: "The Indian Contract Act, 1872" or "The Copyright Act, 1957"
     - section: specific section (e.g. "Section 27")
     - explanation: A simple 2-sentence explanation for a layman.
+    - redline_suggestion: A professional, fair, and legally-balanced alternative version of this clause that protects both parties while complying with the Indian Contract Act.
     
     Strictly avoid mentioning US law concepts like "at-will employment".
     """
     
     raw_response = ai.generate(prompt)
+    ai_data = ai.safe_parse_json(raw_response)
     
-    try:
-        content = raw_response.strip()
-        if "```json" in content:
-            content = content.split("```json")[-1].split("```")[0].strip()
-        elif "```" in content:
-            content = content.split("```")[-1].split("```")[0].strip()
-
-        # 2. Find the first '{' and last '}'
-        start_idx = content.find('{')
-        end_idx = content.rfind('}') + 1
-        
-        if start_idx != -1 and end_idx != -1:
-            clean_json = content[start_idx:end_idx]
-            return json.loads(clean_json)
-        
-        return {
-            "is_predatory": False, 
-            "risk_level": "Low", 
-            "law": "N/A", 
-            "section": "N/A", 
-            "explanation": "Could not analyze clause."
-        }
-    except Exception as e:
-        return {
-            "is_predatory": False, 
-            "risk_level": "Low", 
-            "law": "N/A", 
-            "section": "N/A", 
-            "explanation": "Local analysis inconclusive."
-        }
+    if ai_data:
+        return ai_data
+    
+    return {
+        "is_predatory": False, 
+        "risk_level": "Low", 
+        "law": "N/A", 
+        "section": "N/A", 
+        "explanation": "Local analysis inconclusive."
+    }

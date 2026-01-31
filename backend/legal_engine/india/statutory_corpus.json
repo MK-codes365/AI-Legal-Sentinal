@@ -1,0 +1,98 @@
+[
+  {
+    "act": "Indian Contract Act, 1872",
+    "section": "Section 10",
+    "title": "What agreements are contracts",
+    "description": "All agreements are contracts if they are made by the free consent of parties competent to contract, for a lawful consideration and with a lawful object, and are not hereby expressly declared to be void.",
+    "keywords": ["valid contract", "competent parties", "lawful consideration", "enforceable"],
+    "common_clauses": ["Parties", "Consideration", "Valid Agreement"]
+  },
+  {
+    "act": "Indian Contract Act, 1872",
+    "section": "Section 14",
+    "title": "Free consent defined",
+    "description": "Consent is said to be free when it is not caused by coercion, undue influence, fraud, misrepresentation, or mistake.",
+    "keywords": ["free consent", "voluntary", "agreement", "willingness"],
+    "common_clauses": ["Consent", "Representations and Warranties"]
+  },
+  {
+    "act": "Indian Contract Act, 1872",
+    "section": "Section 15-18",
+    "title": "Coercion, Undue Influence, Fraud, and Misrepresentation",
+    "description": "Agreements obtained through force, pressure, deception, or false statements are voidable at the option of the aggrieved party.",
+    "keywords": ["coercion", "force", "undue influence", "fraud", "deception", "misrepresentation", "false statement"],
+    "common_clauses": ["Fraud", "Misleading Conduct", "Standard of Disclosure"]
+  },
+  {
+    "act": "Indian Contract Act, 1872",
+    "section": "Section 23",
+    "title": "Unlawful consideration and objects",
+    "description": "The consideration or object of an agreement is lawful, unless it is forbidden by law; or is fraudulent; or involves injury to the person or property of another; or the Court regards it as immoral, or opposed to public policy.",
+    "keywords": ["unlawful object", "public policy", "illegal", "fraudulent", "immoral", "opposed to law"],
+    "common_clauses": ["Compliance with Law", "Legality", "Void Object"]
+  },
+  {
+    "act": "Indian Contract Act, 1872",
+    "section": "Section 27",
+    "title": "Agreement in restraint of trade void",
+    "description": "Every agreement by which any one is restrained from exercising a lawful profession, trade or business of any kind, is to that extent void.",
+    "keywords": ["non-compete", "restraint of trade", "profession", "business", "unlawful restriction", "post-termination restriction"],
+    "common_clauses": ["Non-Competition", "Restraint of Trade", "Exclusivity"]
+  },
+  {
+    "act": "Indian Contract Act, 1872",
+    "section": "Section 28",
+    "title": "Agreements in restraint of legal proceedings void",
+    "description": "Every agreement by which any party is restricted absolutely from enforcing his rights under any contract, by the usual legal proceedings, or which limits the time within which he may thus enforce his rights, is void.",
+    "keywords": ["legal proceedings", "jurisdiction", "limitation of action", "restrict legal rights", "time limit to sue"],
+    "common_clauses": ["Dispute Resolution", "Jurisdiction", "Governing Law"]
+  },
+  {
+    "act": "Indian Contract Act, 1872",
+    "section": "Section 56",
+    "title": "Agreement to do impossible act (Frustration)",
+    "description": "An agreement to do an act impossible in itself is void. A contract becomes void when the act becomes impossible or unlawful after the contract is made.",
+    "keywords": ["force majeure", "impossible act", "frustration of contract", "unforeseen event", "void by impossibility"],
+    "common_clauses": ["Force Majeure", "Termination for Impossibility"]
+  },
+  {
+    "act": "Indian Contract Act, 1872",
+    "section": "Section 62",
+    "title": "Novation, Rescission, and Alteration",
+    "description": "If the parties to a contract agree to substitute a new contract for it, or to rescind or alter it, the original contract need not be performed.",
+    "keywords": ["novation", "alteration", "rescission", "substitution", "amendment"],
+    "common_clauses": ["Amendments", "Entire Agreement", "Variation"]
+  },
+  {
+    "act": "Indian Contract Act, 1872",
+    "section": "Section 73",
+    "title": "Compensation for loss or damage (Breach)",
+    "description": "The party who suffers by breach is entitled to receive compensation for any loss or damage caused to him thereby, which naturally arose in the usual course of things.",
+    "keywords": ["damages", "breach", "compensation", "loss", "remedy"],
+    "common_clauses": ["Indemnification", "Limitation of Liability", "Damages"]
+  },
+  {
+    "act": "Indian Contract Act, 1872",
+    "section": "Section 74",
+    "title": "Compensation for breach where penalty stipulated",
+    "description": "When a contract has been broken, if a sum is named in the contract as the amount to be paid in case of such breach, the party complaining of the breach is entitled to receive reasonable compensation not exceeding the amount so named.",
+    "keywords": ["penalty", "stipulated sum", "liquidated damages", "forfeiture"],
+    "common_clauses": ["Liquidated Damages", "Termination Fee"]
+  },
+  {
+    "act": "Indian Contract Act, 1872",
+    "section": "Section 124",
+    "title": "Contract of indemnity defined",
+    "description": "A contract by which one party promises to save the other from loss caused to him by the conduct of the promisor himself, or by the conduct of any other person.",
+    "keywords": ["indemnity", "hold harmless", "save from loss"],
+    "common_clauses": ["Indemnity", "Liability"]
+  },
+  {
+    "act": "Indian Contract Act, 1872 (General)",
+    "section": "Boilerplate / Generic",
+    "title": "Miscellaneous Provisions",
+    "description": "General clauses describing contract execution, administrative procedures, or standard boilerplate.",
+    "keywords": ["signature", "date", "counterpart", "notice", "witness", "signatory"],
+    "common_clauses": ["Signatures", "Counterparts", "Notices", "Execution"]
+  }
+]

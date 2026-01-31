@@ -17,36 +17,49 @@ def extract_key_details(document_text: str) -> Dict:
     details["termination_notice"] = notice_pattern.group() if notice_pattern else "Not detected"
 
     # 2. AI Extraction for complex metadata (Parties, Type)
-    header_text = document_text[:1500] 
-    prompt = f"Analyze this contract header and return ONLY a JSON with fields: 'contract_type', 'parties' (list), 'governing_law'. Text: {header_text}"
+    header_text = document_text[:1500] # Use only relevant header text
+    
+    prompt = f"""
+    Analyze the contract header below and extract metadata in JSON format.
+    
+    ### EXAMPLES:
+    Header: "This SOFTWARE SERVICES AGREEMENT is made between Google India and Vikram Singh."
+    Output: {{"contract_type": "Software Services Agreement", "parties": ["Google India", "Vikram Singh"], "governing_law": "India"}}
+    
+    Header: "FOUNDER AGREEMENT. Parties: Amit Shah, Rohan Mehra. Governing Law: Delhi."
+    Output: {{"contract_type": "Founder Agreement", "parties": ["Amit Shah", "Rohan Mehra"], "governing_law": "Delhi, India", "vesting_schedule": "Not specified"}}
+    
+    ### YOUR TASK:
+    Header: "{header_text}"
+    
+    Return ONLY a valid JSON object. No intro, no markdown.
+    """
     
     try:
-        # We use a very low max_tokens for speed
-        raw_ai = ai.generate(prompt, max_tokens=150)
-        start = raw_ai.find('{')
-        end = raw_ai.rfind('}') + 1
-        if start != -1 and end != -1:
-            ai_data = json.loads(raw_ai[start:end])
-            details["contract_type"] = ai_data.get("contract_type", "Freelance Agreement")
-            details["parties"] = ai_data.get("parties", ["N/A"])
+        raw_ai_response = ai.generate(prompt, max_tokens=300)
+        ai_data = ai.safe_parse_json(raw_ai_response)
+        
+        if ai_data:
+            details["contract_type"] = ai_data.get("contract_type", "Agreement")
+            details["parties"] = ai_data.get("parties", ["Not detected"])
             details["governing_law"] = ai_data.get("governing_law", "India")
+            
+            # Additional keys
+            for key in ["vesting_schedule", "lock_in_period"]:
+                if key in ai_data:
+                    details[key] = ai_data[key]
         else:
-            raise ValueError("No JSON found")
+            raise ValueError("No valid JSON found in AI response")
+            
     except Exception as e:
-        print(f"DEBUG: Metadata AI Fallback triggered: {e}")
-        # 1. Fallback for Contract Type (First line)
-        first_line = document_text.split('\n')[0].strip('# *')
-        details["contract_type"] = first_line if len(first_line) < 60 else "Agreement"
-        
-        # 2. Fallback for Parties (Look for Client/Freelancer labels)
-        client_match = re.search(r"Client:\s*([^\n\r,]+)", document_text, re.IGNORECASE)
-        freelancer_match = re.search(r"Freelancer:\s*([^\n\r,]+)", document_text, re.IGNORECASE)
-        
-        parties = []
-        if client_match: parties.append(client_match.group(1).strip())
-        if freelancer_match: parties.append(freelancer_match.group(1).strip())
-        
-        details["parties"] = parties if parties else ["Parties Not Identified"]
+        print(f"DEBUG: Metadata AI Fallback triggered: {str(e)}")
+        # Fallback Logic
+        lines = document_text.split('\n')
+        title = lines[0].strip('# *')
+        details["contract_type"] = title if len(title) < 50 else "Agreement"
+        details["parties"] = ["Parties Not Identified"]
         details["governing_law"] = "India"
+        details["vesting_schedule"] = "Search contract for 'vesting' terms"
+        details["lock_in_period"] = "Not detected"
 
     return details

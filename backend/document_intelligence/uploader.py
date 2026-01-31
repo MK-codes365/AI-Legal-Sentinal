@@ -2,7 +2,9 @@ from fastapi import UploadFile, File
 
 ALLOWED_TYPES = [
     "application/pdf",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "text/plain",
+    "text/markdown"
 ]
 
 def validate_file(file: UploadFile):
