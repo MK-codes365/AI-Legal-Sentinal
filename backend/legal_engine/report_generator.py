@@ -29,9 +29,9 @@ def generate_pdf_report(data: dict) -> BytesIO:
         spaceAfter=10
     )
     
-    risk_high = ParagraphStyle('RiskHigh', parent=styles['Normal'], textColor=colors.red, fontWeight='BOLD')
-    risk_med = ParagraphStyle('RiskMed', parent=styles['Normal'], textColor=colors.orange, fontWeight='BOLD')
-    risk_low = ParagraphStyle('RiskLow', parent=styles['Normal'], textColor=colors.green, fontWeight='BOLD')
+    risk_high = ParagraphStyle('RiskHigh', parent=styles['Normal'], textColor=colors.red, fontName='Helvetica-Bold')
+    risk_med = ParagraphStyle('RiskMed', parent=styles['Normal'], textColor=colors.orange, fontName='Helvetica-Bold')
+    risk_low = ParagraphStyle('RiskLow', parent=styles['Normal'], textColor=colors.green, fontName='Helvetica-Bold')
     
     elements = []
     
@@ -42,7 +42,8 @@ def generate_pdf_report(data: dict) -> BytesIO:
     
     # Executive Summary
     elements.append(Paragraph("Executive Summary", section_style))
-    summary_text = data.get("summary", {}).get("overview", "No summary available.")
+    summary_data = data.get("summary") or {}
+    summary_text = summary_data.get("overview", "No summary available.")
     elements.append(Paragraph(summary_text, styles['Normal']))
     
     # Key Details

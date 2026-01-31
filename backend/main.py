@@ -1,8 +1,14 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi import FastAPI, UploadFile, File, HTTPException, Request, WebSocket, WebSocketDisconnect
+from fastapi.responses import JSONResponse, FileResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List
+from typing import List, Dict
 from pydantic import BaseModel
+import uvicorn
+import os
+import shutil
+import asyncio
+import json
+from datetime import datetime
 from logging_config import configure_logging
 
 logger = configure_logging()
@@ -21,7 +27,8 @@ from legal_engine.deviation_checker import check_deviations
 from legal_engine.jurisdiction_guardrail import check_jurisdiction_compliance
 
 from ai.explainer import explain_flag, explain_raw_text, highlight_risky_words, generate_holistic_breakdown
-from ai.qa import answer_from_contract
+from ai.qa import answer_from_contract, answer_from_contract_stream
+from legal_engine.news_aggregator import fetch_legal_news
 from legal_engine.india.contract_act import run_analysis
 from legal_engine.structure_check import analyze_structure
 from legal_engine.report_generator import generate_pdf_report
@@ -36,6 +43,7 @@ app = FastAPI(
 # Global Session Store (For Demo purposes, uses memory)
 active_clauses = []
 token_session_map = {}
+live_faqs = [] # Memory store for community Q&A
 
 app.add_middleware(
     CORSMiddleware,
@@ -45,16 +53,70 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# WebSocket Connection Manager
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def broadcast(self, message: dict):
+        for connection in self.active_connections:
+            try:
+                await connection.send_json(message)
+            except:
+                pass
+
+manager = ConnectionManager()
+
+# Background task for live news polling
+async def news_poll_loop():
+    """Polls for new news and broadcasts via WebSocket every 5 minutes."""
+    while True:
+        try:
+            # We fetch only NEW items (incremental)
+            new_items = fetch_legal_news(incremental=True)
+            if new_items:
+                for item in new_items:
+                    await manager.broadcast({
+                        "type": "new_article",
+                        "data": item
+                    })
+        except Exception as e:
+            print(f"WS News Polling Error: {e}")
+        
+        await asyncio.sleep(10) # Wait 10 seconds (ultra high frequency)
+
 @app.on_event("startup")
 async def startup_event():
-    print("🚀 Warming up Vidhi Setu Engines...")
+    # Start the news polling background task
+    asyncio.create_task(news_poll_loop())
+    
+    # Existing stabilization code
     from ai.local_llm import get_local_ai
     from legal_engine.india.statutory_mapper import get_statutory_mapper
-    
-    # Pre-initialize singletons
+    print("🚀 Initializing AI Engines for near-zero lag...")
     get_local_ai()
     get_statutory_mapper()
-    print("✅ All systems go!")
+
+@app.websocket("/ws/news")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            # Keep the connection open
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+
+@app.get("/")
+def read_root():
+    return {"message": "Vidhi Setu API is running!"}
 
 @app.get("/health")
 def health_check():
@@ -165,11 +227,68 @@ async def analyze_document(
 
 class ChatRequest(BaseModel):
     query: str
+    mode: str = "Professional"
+    context_summary: str = ""
+
+@app.get("/legal-news")
+def get_legal_news():
+    """Returns real-time legal news for the dashboard."""
+    return fetch_legal_news()
+
+@app.get("/live-faqs")
+def get_live_faqs():
+    """Returns the most recent captured community Q&As."""
+    return live_faqs[::-1] # Newest first
+
+@app.post("/ask-contract-stream")
+async def search_contract_stream(request: ChatRequest):
+    """Streaming version of the chat endpoint that also captures Q&A for the live FAQ."""
+    from datetime import datetime
+    import asyncio
+    
+    # Capture the main loop to use inside the sync thread
+    loop = asyncio.get_running_loop()
+    
+    def capture_generator():
+        full_response = ""
+        for chunk in answer_from_contract_stream(active_clauses, request.query, request.mode, request.context_summary):
+            full_response += chunk
+            yield chunk
+        
+        # After stream completes, handle broadcasting
+        if len(full_response) > 20: 
+            faq_item = {
+                "q": request.query,
+                "a": full_response,
+                "timestamp": datetime.now().strftime("%I:%M %p")
+            }
+            live_faqs.append(faq_item)
+            if len(live_faqs) > 10: live_faqs.pop(0) 
+            
+            # Broadcast using the captured loop
+            asyncio.run_coroutine_threadsafe(
+                manager.broadcast({"type": "new_faq", "data": faq_item}),
+                loop
+            )
+
+    return StreamingResponse(capture_generator(), media_type="text/plain")
 
 @app.post("/ask-contract")
-def search_contract(request: ChatRequest):
+async def search_contract(request: ChatRequest):
     # We no longer block if active_clauses is empty to allow for "Universal Assistant" mode
-    response_text = answer_from_contract(active_clauses, request.query)
+    response_text = answer_from_contract(active_clauses, request.query, request.mode, request.context_summary)
+    
+    # Capture for FAQ
+    if len(response_text) > 20:
+        faq_item = {
+            "q": request.query,
+            "a": response_text,
+            "timestamp": datetime.now().strftime("%I:%M %p")
+        }
+        live_faqs.append(faq_item)
+        if len(live_faqs) > 10: live_faqs.pop(0)
+        await manager.broadcast({"type": "new_faq", "data": faq_item})
+        
     return {"answer": response_text}
 
 

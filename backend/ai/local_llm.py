@@ -41,14 +41,34 @@ class LocalLLM:
                     {"role": "user", "content": prompt}
                 ],
                 max_tokens=max_tokens,
-                temperature=0.2
+                temperature=0.2,
+                stream=False
             )
             content = response.choices[0].message.content
             if content is None or content.strip() == "":
-                return "Error: Local AI returned an empty response. Please check if Ollama is running correctly."
+                return "Error: Local AI returned an empty response."
             return content.strip()
         except Exception as e:
             return f"Error: {str(e)}"
+
+    def generate_stream(self, prompt: str, max_tokens: int = 600):
+        """Yields chunks of text as they are generated for real-time streaming."""
+        try:
+            stream = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=[
+                    {"role": "system", "content": "Professional Indian Legal Assistant."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=max_tokens,
+                temperature=0.2,
+                stream=True
+            )
+            for chunk in stream:
+                if chunk.choices[0].delta.content:
+                    yield chunk.choices[0].delta.content
+        except Exception as e:
+            yield f"Error in stream: {str(e)}"
 
     def safe_parse_json(self, text: str) -> Optional[Dict]:
         """

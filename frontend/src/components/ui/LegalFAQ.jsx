@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, HelpCircle, Scale, Shield, FileText } from 'lucide-react';
+import { ChevronDown, HelpCircle, Scale, Shield, FileText, Zap } from 'lucide-react';
 
 const FAQ_DATA = [
     {
@@ -37,6 +37,44 @@ const FAQ_DATA = [
 
 const LegalFAQ = () => {
     const [openIndex, setOpenIndex] = useState(null);
+    const [liveFaqs, setLiveFaqs] = useState([]);
+
+    useEffect(() => {
+        // Establish WebSocket for live FAQ updates
+        const WS_URL = window.location.hostname === 'localhost' ? 'ws://localhost:8000/ws/news' : `ws://${window.location.host}/ws/news`;
+        const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:8000' : '/api';
+        
+        const socket = new WebSocket(WS_URL);
+
+        socket.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            if (message.type === 'new_faq') {
+                setLiveFaqs(prev => [message.data, ...prev].slice(0, 10));
+            }
+        };
+
+        // Fetch initial live FAQs
+        fetch(`${API_BASE}/live-faqs`)
+            .then(res => res.json())
+            .then(data => setLiveFaqs(data))
+            .catch(err => console.error("Failed to fetch live FAQs:", err));
+
+        return () => socket.close();
+    }, []);
+
+    const combinedData = [
+        ...FAQ_DATA,
+        ...(liveFaqs.length > 0 ? [{
+            category: "Community Q&A (Live)",
+            items: liveFaqs.map(f => ({
+                q: f.q,
+                a: f.a,
+                icon: <Zap className="w-4 h-4 text-amber-400" />,
+                isLive: true,
+                time: f.timestamp
+            }))
+        }] : [])
+    ];
 
     return (
         <section className="mt-16 bg-white rounded-3xl border-2 border-zinc-100 overflow-hidden shadow-sm">
@@ -51,7 +89,7 @@ const LegalFAQ = () => {
             </div>
 
             <div className="p-8">
-                {FAQ_DATA.map((cat, catIdx) => (
+                {combinedData.map((cat, catIdx) => (
                     <div key={catIdx} className="mb-10 last:mb-0">
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-6 flex items-center gap-2">
                             <span className="w-8 h-px bg-zinc-200" />
@@ -72,7 +110,14 @@ const LegalFAQ = () => {
                                                 <div className={`p-2 rounded-lg transition-colors ${isOpen ? 'bg-zinc-900 text-white' : 'bg-zinc-100 text-zinc-500 group-hover:bg-zinc-200'}`}>
                                                     {item.icon}
                                                 </div>
-                                                <span className="font-bold text-zinc-900 text-sm">{item.q}</span>
+                                                <div className="flex flex-col">
+                                                    <span className="font-bold text-zinc-900 text-sm">{item.q}</span>
+                                                    {item.isLive && (
+                                                        <span className="text-[9px] text-amber-600 font-bold uppercase tracking-wider mt-1">
+                                                            Live Community Query • {item.time}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
                                             <ChevronDown className={`w-5 h-5 text-zinc-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-zinc-900' : ''}`} />
                                         </button>
